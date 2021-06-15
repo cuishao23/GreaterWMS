@@ -1008,14 +1008,22 @@
         <q-bar class="bg-light-blue-10 text-white rounded-borders" style="height: 50px">
           <div>{{ viewdn }}</div>
           <q-space />
+          {{ $t('outbound.dn') }}
         </q-bar>
         <q-card-section>
-          <div class="text-h6">Sender: {{ warehouse_detail.warehouse_name }}</div>
-          <div class="text-subtitle2">Address: {{ warehouse_detail.warehouse_city }}{{ warehouse_detail.warehouse_address }}</div>
-          <div class="text-subtitle2">Tel: {{ warehouse_detail.warehouse_contact }}</div>
-          <div class="text-h6">Receiver: {{ customer_detail.customer_name }}</div>
-          <div class="text-subtitle2">Address: {{ customer_detail.customer_city }}{{ customer_detail.customer_address }}</div>
-          <div class="text-subtitle2">Tel: {{ customer_detail.customer_contact }}</div>
+          <div class="row">
+            <div class="col-8">
+              <div class="text-h6">Sender: {{ warehouse_detail.warehouse_name }}</div>
+              <div class="text-subtitle2">Address: {{ warehouse_detail.warehouse_city }}{{ warehouse_detail.warehouse_address }}</div>
+              <div class="text-subtitle2">Tel: {{ warehouse_detail.warehouse_contact }}</div>
+              <div class="text-h6">Receiver: {{ customer_detail.customer_name }}</div>
+              <div class="text-subtitle2">Address: {{ customer_detail.customer_city }}{{ customer_detail.customer_address }}</div>
+              <div class="text-subtitle2">Tel: {{ customer_detail.customer_contact }}</div>
+            </div>
+            <div class="col-4">
+              <img :src="bar_code" style="width: 70%; margin-left: 15%"/>
+            </div>
+          </div>
         </q-card-section>
         <q-markup-table>
           <thead>
@@ -1065,7 +1073,8 @@
             <td class="text-right">{{ view.bin_name }}</td>
             <td class="text-right">{{ view.goods_code }}</td>
             <td class="text-right">{{ view.pick_qty }}</td>
-            <td class="text-right"></td>
+            <td class="text-right" v-show="picklist_check === 0"></td>
+            <td class="text-right" v-show="picklist_check > 0">{{ view.picked_qty }}</td>
             <td class="text-right"></td>
           </tr>
           </tbody>
@@ -1220,7 +1229,9 @@ export default {
       height: '',
       table_list: [],
       viewprint_table: [],
+      bar_code: '',
       pickinglist_print_table: [],
+      pickinglist_check: 0,
       warehouse_detail: {},
       customer_list: [],
       driver_list: [],
@@ -1893,6 +1904,13 @@ export default {
     PrintPickingList (e) {
       var _this = this
       getauth(_this.pathname + 'pickinglist/' + e.id + '/').then(res => {
+        _this.pickinglist_print_table = []
+        _this.picklist_check = 0
+        res.forEach((item) => {
+          if (item.picked_qty > 0) {
+            _this.picklist_check += 1
+          } else {}
+        })
         _this.pickinglist_print_table = res
         _this.viewPLForm = true
       }).catch(err => {
@@ -1962,6 +1980,18 @@ export default {
         _this.warehouse_detail = res.warehouse_detail
         _this.customer_detail = res.customer_detail
         _this.viewdn = e.dn_code
+        var QRCode = require('qrcode')
+        QRCode.toDataURL(e.bar_code, [{
+          errorCorrectionLevel: 'H',
+          mode: 'byte',
+          version: '2',
+          type: 'image/jpeg'
+        }]
+        ).then(url => {
+          _this.bar_code = url
+        }).catch(err => {
+          console.error(err)
+        })
         _this.viewForm = true
       })
     },
