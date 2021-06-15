@@ -15,7 +15,6 @@ SECRET_KEY = get_random_secret_key()
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
-#DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -57,6 +56,7 @@ INSTALLED_APPS = [
     'stock.apps.StockConfig',
     'throttle.apps.ThrottleConfig',
     'uploadfile.apps.UploadfileConfig',
+    'scanner.apps.ScannerConfig',
     'rest_framework',
     'django_filters',
     'silk',
@@ -251,6 +251,7 @@ CORS_ALLOW_HEADERS = (
     'x-csrftoken',
     'x-requested-with',
     'token',
-    'language'
+    'language',
+    'device'
 )
 

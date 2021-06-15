@@ -971,14 +971,22 @@
          <q-bar class="bg-light-blue-10 text-white rounded-borders" style="height: 50px">
            <div>{{ viewAsn }}</div>
            <q-space />
+           {{ $t('inbound.asn') }}
          </q-bar>
          <q-card-section>
-           <div class="text-h6">Sender: {{ supplier_detail.supplier_name }}</div>
-           <div class="text-subtitle2">Address: {{ supplier_detail.supplier_city }}{{ supplier_detail.supplier_address }}</div>
-           <div class="text-subtitle2">Tel: {{ supplier_detail.supplier_contact }}</div>
-           <div class="text-h6">Receiver: {{ warehouse_detail.warehouse_name }}</div>
-           <div class="text-subtitle2">Address: {{ warehouse_detail.warehouse_city }}{{ warehouse_detail.warehouse_address }}</div>
-           <div class="text-subtitle2">Tel: {{ warehouse_detail.warehouse_contact }}</div>
+            <div class="row">
+              <div class="col-8">
+                <div class="text-h6">Sender: {{ supplier_detail.supplier_name }}</div>
+                <div class="text-subtitle2">Address: {{ supplier_detail.supplier_city }}{{ supplier_detail.supplier_address }}</div>
+                <div class="text-subtitle2">Tel: {{ supplier_detail.supplier_contact }}</div>
+                <div class="text-h6">Receiver: {{ warehouse_detail.warehouse_name }}</div>
+                <div class="text-subtitle2">Address: {{ warehouse_detail.warehouse_city }}{{ warehouse_detail.warehouse_address }}</div>
+                <div class="text-subtitle2">Tel: {{ warehouse_detail.warehouse_contact }}</div>
+              </div>
+              <div class="col-4">
+                <img :src="bar_code" style="width: 70%; margin-left: 15%"/>
+              </div>
+            </div>
          </q-card-section>
          <q-markup-table>
           <thead>
@@ -1071,6 +1079,7 @@ export default {
       height: '',
       table_list: [],
       viewprint_table: [],
+      bar_code: '',
       warehouse_detail: {},
       supplier_list: [],
       supplier_detail: {},
@@ -1389,11 +1398,13 @@ export default {
         _this.table_list = []
         _this.getList()
         _this.newDataCancel()
-        _this.$q.notify({
-          message: 'Success Create',
-          icon: 'check',
-          color: 'green'
-        })
+        if (!res.detail) {
+          _this.$q.notify({
+            message: 'Success Create',
+            icon: 'check',
+            color: 'green'
+          })
+        }
       }).catch(err => {
         _this.$q.notify({
           message: err.detail,
@@ -1745,6 +1756,18 @@ export default {
         _this.warehouse_detail = res.warehouse_detail
         _this.supplier_detail = res.supplier_detail
         _this.viewAsn = e.asn_code
+        var QRCode = require('qrcode')
+        QRCode.toDataURL(e.bar_code, [{
+          errorCorrectionLevel: 'H',
+          mode: 'byte',
+          version: '2',
+          type: 'image/jpeg'
+        }]
+        ).then(url => {
+          _this.bar_code = url
+        }).catch(err => {
+          console.error(err)
+        })
         _this.viewForm = true
       })
     },
