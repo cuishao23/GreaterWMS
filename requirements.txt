@@ -11,7 +11,7 @@ coreapi==2.3.3
 coreschema==0.0.4
 cryptography==3.4.6
 daphne==3.0.1
-Django==3.1.11
+Django==3.1.12
 django-cors-headers==3.7.0
 django-filter==2.4.0
 django-silk==4.1.0
@@ -53,5 +53,5 @@ Twisted==20.3.0
 txaio==21.2.1
 unicodecsv==0.14.1
 uritemplate==3.0.1
-urllib3==1.26.4
+urllib3==1.26.5
 zope.interface==5.2.0
